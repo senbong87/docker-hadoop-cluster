@@ -38,6 +38,7 @@ services:
         hostname: datanode2
         depends_on:
             - namenode
+            - datanode1
         networks:
             - hadoop
         volumes:

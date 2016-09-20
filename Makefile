@@ -1,4 +1,5 @@
 run: build-hadoop
+	docker network create hadoop
 	docker-compose up
 
 build-hadoop:
