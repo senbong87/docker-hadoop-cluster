@@ -1,0 +1,102 @@
+version: '2'
+
+services:
+    namenode:
+        image: namenode:base
+        build: ./namenode
+        container_name: namenode
+        hostname: namenode
+        networks:
+            - hadoop
+        volumes:
+            - ./config/hadoop/core-site.xml:/usr/local/hadoop/etc/hadoop/core-site.xml
+            - ./config/hadoop/hdfs-site.xml:/usr/local/hadoop/etc/hadoop/hdfs-site.xml
+            - ./config/hadoop/log4j.properties:/usr/local/hadoop/etc/hadoop/log4j.properties
+        ports:
+            - "50070:50070"
+            - "8020:8020" 
+        command: hdfs namenode
+
+    datanode1:
+        image: datanode:base
+        build: ./datanode
+        container_name: datanode1
+        hostname: datanode1
+        depends_on:
+            - namenode
+        networks:
+            - hadoop
+        volumes:
+            - ./config/hadoop/core-site.xml:/usr/local/hadoop/etc/hadoop/core-site.xml
+            - ./config/hadoop/hdfs-site.xml:/usr/local/hadoop/etc/hadoop/hdfs-site.xml
+            - ./config/hadoop/log4j.properties:/usr/local/hadoop/etc/hadoop/log4j.properties
+        command: hdfs datanode
+
+    datanode2:
+        image: datanode:base
+        container_name: datanode2
+        hostname: datanode2
+        depends_on:
+            - namenode
+        networks:
+            - hadoop
+        volumes:
+            - ./config/hadoop/core-site.xml:/usr/local/hadoop/etc/hadoop/core-site.xml
+            - ./config/hadoop/hdfs-site.xml:/usr/local/hadoop/etc/hadoop/hdfs-site.xml
+            - ./config/hadoop/log4j.properties:/usr/local/hadoop/etc/hadoop/log4j.properties
+        command: hdfs datanode
+
+    resourcemanager:
+        image: yarn:base
+        build: ./yarn
+        container_name: resourcemanager
+        hostname: resourcemanager
+        depends_on:
+            - namenode
+        networks:
+            - hadoop
+        volumes:
+            - ./config/hadoop/core-site.xml:/usr/local/hadoop/etc/hadoop/core-site.xml
+            - ./config/hadoop/yarn-site.xml:/usr/local/hadoop/etc/hadoop/yarn-site.xml
+            - ./config/hadoop/capacity-scheduler.xml:/usr/local/hadoop/etc/hadoop/capacity-scheduler.xml
+            - ./config/hadoop/log4j.properties:/usr/local/hadoop/etc/hadoop/log4j.properties
+        ports:
+            - "8088:8088"
+        command: yarn resourcemanager
+
+    nodemanager:
+        image: yarn:base
+        depends_on:
+            - namenode
+            - resourcemanager
+        networks:
+            - hadoop
+        volumes:
+            - ./config/hadoop/core-site.xml:/usr/local/hadoop/etc/hadoop/core-site.xml
+            - ./config/hadoop/yarn-site.xml:/usr/local/hadoop/etc/hadoop/yarn-site.xml
+            - ./config/hadoop/capacity-scheduler.xml:/usr/local/hadoop/etc/hadoop/capacity-scheduler.xml
+            - ./config/hadoop/log4j.properties:/usr/local/hadoop/etc/hadoop/log4j.properties
+        command: yarn nodemanager
+
+    spark:
+        image: spark:base
+        build: ./spark
+        container_name: spark
+        hostname: spark
+        depends_on:
+            - namenode
+            - resourcemanager
+        networks:
+            - hadoop
+        volumes:
+            - ./config/hadoop/core-site.xml:/usr/local/hadoop/etc/hadoop/core-site.xml
+            - ./config/hadoop/hdfs-site.xml:/usr/local/hadoop/etc/hadoop/hdfs-site.xml
+            - ./config/hadoop/yarn-site.xml:/usr/local/hadoop/etc/hadoop/yarn-site.xml
+            - ./config/hadoop/log4j.properties:/usr/local/hadoop/etc/hadoop/log4j.properties
+            - ./config/spark/spark-defaults.conf:/usr/local/spark/conf/spark-defaults.conf
+            - ./config/spark/log4j.properties:/usr/local/spark/conf/log4j.properties
+        command: tail -f /var/log/dmesg
+
+networks:
+    hadoop:
+        external: true
