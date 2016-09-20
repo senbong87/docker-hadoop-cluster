@@ -2,7 +2,7 @@ version: '2'
 
 services:
     namenode:
-        image: namenode:base
+        image: senbong/namenode:base
         build: ./namenode
         container_name: namenode
         hostname: namenode
@@ -18,7 +18,7 @@ services:
         command: hdfs namenode
 
     datanode1:
-        image: datanode:base
+        image: senbong/datanode:base
         build: ./datanode
         container_name: datanode1
         hostname: datanode1
@@ -33,7 +33,7 @@ services:
         command: hdfs datanode
 
     datanode2:
-        image: datanode:base
+        image: senbong/datanode:base
         container_name: datanode2
         hostname: datanode2
         depends_on:
@@ -48,7 +48,7 @@ services:
         command: hdfs datanode
 
     resourcemanager:
-        image: yarn:base
+        image: senbong/yarn:base
         build: ./yarn
         container_name: resourcemanager
         hostname: resourcemanager
@@ -66,7 +66,7 @@ services:
         command: yarn resourcemanager
 
     nodemanager:
-        image: yarn:base
+        image: senbong/yarn:base
         depends_on:
             - namenode
             - resourcemanager
@@ -80,7 +80,7 @@ services:
         command: yarn nodemanager
 
     spark:
-        image: spark:base
+        image: senbong/spark:base
         build: ./spark
         container_name: spark
         hostname: spark

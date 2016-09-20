@@ -1,4 +1,4 @@
-FROM hadoop:base
+FROM senbong/hadoop:base
 
 MAINTAINER senbong <senbong87@gmail.com>
 
